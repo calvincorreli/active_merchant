@@ -299,7 +299,17 @@ module ActiveMerchant #:nodoc:
       end
 
       def commit(action, params)
-        response = parse(ssl_post(self.live_url, post_data(action, params)))
+        Rails.logger.info "CALVIN: Quickpay action: #{action}, params: #{params.inspect}"
+        Rails.logger.info "CALVIN: Quickpay POST #{self.live_url}"
+        Rails.logger.info "CALVIN: Quickpay POST data: #{post_data(action, params)}"
+        
+        raw_response = ssl_post(self.live_url, post_data(action, params))
+
+        Rails.logger.info "CALVIN: Raw response: #{raw_response}"
+
+        response = parse(raw_response)
+
+        Rails.logger.info "CALVIN: Response: #{response.inspect}"
 
         Response.new(successful?(response), message_from(response), response,
           :test => test?,
