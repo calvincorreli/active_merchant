@@ -183,7 +183,8 @@ module ActiveMerchant #:nodoc:
           if options[:track_data]
             card[:swipe_data] = options[:track_data]
           else
-            card[:number] = creditcard
+            # This should be the string, not the hash { number: "TOKEN" }
+            card = creditcard
           end
           post[:card] = card
         end
@@ -252,9 +253,11 @@ module ActiveMerchant #:nodoc:
         raw_response = response = nil
         success = false
         begin
-          Rails.logger.info "CALVIN: Stripe #{method} #{self.live_url + url}, POST data: #{post_data(parameters).inspect}, HEADERS: #{headers(options).inspect}"
+          Rails.logger.info "CALVIN: Stripe parameters: #{parameters.inspect}"
+          Rails.logger.info "CALVIN: Stripe #{method.upcase} #{self.live_url + url}"
+          Rails.logger.info "CALVIN: Stripe POST data: #{post_data(parameters).inspect}"
+          Rails.logger.info "CALVIN: Stripe Headers: #{headers(options).inspect}"
           raw_response = ssl_request(method, self.live_url + url, post_data(parameters), headers(options))
-          Rails.logger.info "CALVIN: Stripe raw response: #{raw_response.inspect}"
           response = parse(raw_response)
           Rails.logger.info "CALVIN: Stripe parsed response: #{response.inspect}"
           success = !response.key?("error")
@@ -263,6 +266,8 @@ module ActiveMerchant #:nodoc:
           response = response_error(raw_response)
         rescue JSON::ParserError
           response = json_error(raw_response)
+        ensure
+          Rails.logger.info "CALVIN: Stripe raw response: #{raw_response.inspect}"          
         end
 
         card = response["card"] || response["active_card"] || {}
