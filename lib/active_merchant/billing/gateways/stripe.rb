@@ -255,7 +255,7 @@ module ActiveMerchant #:nodoc:
         begin
           Rails.logger.info "CALVIN: Stripe parameters: #{parameters.inspect}"
           Rails.logger.info "CALVIN: Stripe #{method.upcase} #{self.live_url + url}"
-          Rails.logger.info "CALVIN: Stripe POST data: #{post_data(parameters).inspect}"
+          Rails.logger.info "CALVIN: Stripe POST data: #{post_data(parameters)}"
           Rails.logger.info "CALVIN: Stripe Headers: #{headers(options).inspect}"
           raw_response = ssl_request(method, self.live_url + url, post_data(parameters), headers(options))
           response = parse(raw_response)
