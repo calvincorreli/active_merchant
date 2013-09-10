@@ -252,8 +252,11 @@ module ActiveMerchant #:nodoc:
         raw_response = response = nil
         success = false
         begin
+          Rails.logger.info "CALVIN: Stripe #{method} #{self.live_url + url}, POST data: #{post_data(parameters).inspect}, HEADERS: #{headers(options).inspect}"
           raw_response = ssl_request(method, self.live_url + url, post_data(parameters), headers(options))
+          Rails.logger.info "CALVIN: Stripe raw response: #{raw_response.inspect}"
           response = parse(raw_response)
+          Rails.logger.info "CALVIN: Stripe parsed response: #{response.inspect}"
           success = !response.key?("error")
         rescue ResponseError => e
           raw_response = e.response.body
