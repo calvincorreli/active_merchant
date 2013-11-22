@@ -22,7 +22,7 @@ class QuickpayNotificationTest < Test::Unit::TestCase
   end
 
   def test_acknowledgement
-    assert @quickpay.acknowledge
+    assert @quickpay.acknowledge, "should acknowledge"
   end
 
   def test_failed_acknnowledgement
@@ -36,12 +36,12 @@ class QuickpayNotificationTest < Test::Unit::TestCase
   end
 
   def test_generate_md5string
-    assert_equal "authorize1353061158123DKK2012-11-16T10:19:36+00:001000OK000OKMerchant #1merchant1@pil.dk4262dankortXXXXXXXXXXXX9999nets10test",
+    assert_equal "authorize1353061158123DKK2012-11-16T10:19:36+00:001000OK000OKMerchant #1 merchant1@pil.dk4262dankortXXXXXXXXXXXX9999nets10test",
                  @quickpay.generate_md5string
   end
 
   def test_generate_md5check
-    assert_equal "d991ae505cbb3bad75eb86e02be97335", @quickpay.generate_md5check
+    assert_equal "3de7b19284146aafd9eaa90b0bc230e2", @quickpay.generate_md5check
   end
 
   def test_respond_to_acknowledge
@@ -94,7 +94,7 @@ OK
 ------------------------------8a827a0e6829
 Content-Disposition: form-data; name="merchant"
 
-Merchant #1
+Merchant #1 
 ------------------------------8a827a0e6829
 Content-Disposition: form-data; name="merchantemail"
 
@@ -142,7 +142,7 @@ Content-Disposition: form-data; name="fee"
 ------------------------------8a827a0e6829
 Content-Disposition: form-data; name="md5check"
 
-d991ae505cbb3bad75eb86e02be97335
+3de7b19284146aafd9eaa90b0bc230e2
 ------------------------------8a827a0e6829--
 END_POST
   end
