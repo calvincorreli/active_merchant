@@ -258,7 +258,7 @@ module ActiveMerchant #:nodoc:
           if history = result.params['history']
             history.each do |hash|
               hash[:state_text] = STATE[hash[:state].to_i]
-              hash[:time] = DateTime.strptime(hash[:time], '%y%m%d%H%M%S')
+              hash[:time] = Time.parse(hash[:time])
             end
           end
         end
