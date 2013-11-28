@@ -13,6 +13,16 @@ module ActiveMerchant #:nodoc:
       self.homepage_url = 'http://quickpay.dk/'
       self.display_name = 'Quickpay'
 
+      # CALVIN ADDED
+      STATE = {
+        0 => 'Initial',
+        1 => 'Authorized',
+        3 => 'Captured',
+        5 => 'Canceled',
+        7 => 'Refunded',
+        9 => 'Subscribed'
+      }
+
       MD5_CHECK_FIELDS = {
         3 => {
           :authorize => %w(protocol msgtype merchant ordernumber amount
@@ -233,6 +243,27 @@ module ActiveMerchant #:nodoc:
 
         commit(:subscribe, post)
       end
+      
+      # CALVIN ADDED
+      def status(identification, options = {})
+        post = {}
+    
+        if identification.blank?
+          add_invoice(post, options)
+        else
+          add_reference(post, identification) 
+        end
+    
+        commit(:status, post).tap do |result|
+          if history = result.params['history']
+            history.each do |hash|
+              hash[:state_text] = STATE[hash[:state].to_i]
+              hash[:time] = DateTime.strptime(hash[:time], '%y%m%d%H%M%S')
+            end
+          end
+        end
+      end
+      
 
       private
 
@@ -327,7 +358,17 @@ module ActiveMerchant #:nodoc:
         doc = REXML::Document.new(data)
 
         doc.root.elements.each do |element|
-          response[element.name.to_sym] = element.text
+          if element.elements.empty?
+            response[element.name.to_sym] = element.text
+          else
+            # CALVIN ADDED
+            response[element.name.to_sym] ||= []
+            hash = {}
+            element.elements.each do |child|
+              hash[child.name.to_sym] = child.text
+            end
+            response[element.name.to_sym] << hash
+          end
         end
 
         response
@@ -348,12 +389,15 @@ module ActiveMerchant #:nodoc:
       end
 
       def generate_check_hash(action, params)
+        Rails.logger.info "CALVIN: Quickpay md5 fields: #{MD5_CHECK_FIELDS[@protocol][action].inspect}"
         string = MD5_CHECK_FIELDS[@protocol][action].collect do |key|
           params[key.to_sym]
         end.join('')
 
         # Add the md5checkword
         string << @options[:password].to_s
+
+        Rails.logger.info "CALVIN: Quickpay md5 string: #{string.inspect}"
 
         Digest::MD5.hexdigest(string)
       end
