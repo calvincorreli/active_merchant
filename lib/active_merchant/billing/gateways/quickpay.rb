@@ -155,7 +155,7 @@ module ActiveMerchant #:nodoc:
           :recurring => %w(protocol msgtype merchant ordernumber amount currency
                            autocapture transaction apikey),
 
-          :status    => %w(protocol msgtype merchant transaction apikey),
+          :status    => %w(protocol msgtype merchant transaction ordernumber apikey),
 
           :chstatus  => %w(protocol msgtype merchant apikey)
         }        
@@ -394,10 +394,10 @@ module ActiveMerchant #:nodoc:
           params[key.to_sym]
         end.join('')
 
+        Rails.logger.info "CALVIN: Quickpay md5 string: #{string.inspect}"
+
         # Add the md5checkword
         string << @options[:password].to_s
-
-        Rails.logger.info "CALVIN: Quickpay md5 string: #{string.inspect}"
 
         Digest::MD5.hexdigest(string)
       end
