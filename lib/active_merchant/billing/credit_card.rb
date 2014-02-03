@@ -1,7 +1,7 @@
 require 'time'
 require 'date'
 require 'active_merchant/billing/expiry_date'
-require 'active_support/core_ext/class/attribute_accessors'
+require 'active_support/core_ext/module/attribute_accessors'
 
 module ActiveMerchant #:nodoc:
   module Billing #:nodoc:

@@ -29,7 +29,6 @@ require 'active_support/core_ext/object/conversions'
 require 'active_support/core_ext/class/attribute'
 require 'active_support/core_ext/module/attribute_accessors'
 require 'active_support/core_ext/class/delegating_attributes'
-require 'active_support/core_ext/module/attribute_accessors'
 
 begin
   require 'active_support/base64'
