@@ -112,22 +112,18 @@ module ActiveMerchant #:nodoc:
             # 30 + 12
             #------------------------------8a827a0e6829
             #Content-Disposition: form-data; name="msgtype"
+            #Content-Type: text/plain;charset=utf-8
             #
             #subscribe
             #------------------------------8a827a0e6829
             #Content-Disposition: form-data; name="ordernumber"
             #
             #BILP94406
-
-            if post =~ /-{20,40}\w{6,24}/
-              @raw = post.to_s
-              post.split(/-{20,40}\w{6,24}[\n\r]*/m).each do |part|
-                part.scan(/([^\n\r]+)[\n\r]+([^\n\r]*)/m) do |header, value|
-                  if header.match(/name=["'](.*)["']/)
-                    params[$1] = value
-                  end
-                end
-              end
+            if post =~ /\A--([-\w]+)/
+              self.params.update(Rack::Multipart.parse_multipart(
+                'CONTENT_TYPE' => "multipart/form-data; boundary=#{$1}", 
+                'rack.input' => StringIO.new(post)
+              ))
             else
               super
             end
